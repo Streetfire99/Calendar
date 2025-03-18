@@ -9,29 +9,41 @@ load_dotenv()
 api_key = os.getenv("OPENAI_API_KEY")
 org_id = os.getenv("OPENAI_ORG_ID")
 
-if not api_key:
-    raise ValueError("OpenAI API key not found in .env file")
-
-if not org_id:
-    raise ValueError("OpenAI Organization ID not found in .env file")
-
 # Initialize OpenAI client with organization ID
-client = OpenAI(
-    api_key=api_key,
-    organization=org_id
-)
+client = None
+if api_key and org_id:
+    try:
+        client = OpenAI(
+            api_key=api_key,
+            organization=org_id
+        )
+    except Exception as e:
+        print(f"Error initializing OpenAI client: {str(e)}")
+        client = None
 
 def load_events():
-    return pd.read_csv('events.csv')
+    try:
+        return pd.read_csv('events.csv')
+    except FileNotFoundError:
+        return pd.DataFrame(columns=['id', 'title', 'start_datetime', 'end_datetime', 'description', 'event_type', 'color', 'is_all_day', 'recipe_id', 'location', 'attendees', 'recurring', 'created_at', 'updated_at', 'name'])
 
 def load_pantry():
-    return pd.read_csv('pantry.csv')
+    try:
+        return pd.read_csv('pantry.csv')
+    except FileNotFoundError:
+        return pd.DataFrame()
 
 def load_projects():
-    return pd.read_csv('progetti.csv')
+    try:
+        return pd.read_csv('progetti.csv')
+    except FileNotFoundError:
+        return pd.DataFrame()
 
 def load_recipes():
-    return pd.read_csv('recipes.csv')
+    try:
+        return pd.read_csv('recipes.csv')
+    except FileNotFoundError:
+        return pd.DataFrame()
 
 def _save_recipes(df):
     df.to_csv('recipes.csv', index=False)
@@ -76,6 +88,9 @@ def delete_task(task_id):
 
 def chat_with_openai(prompt):
     """Funzione per interagire con ChatGPT"""
+    if client is None:
+        return "Mi dispiace, il servizio OpenAI non è configurato correttamente. Controlla le variabili d'ambiente."
+    
     try:
         response = client.chat.completions.create(
             model="gpt-3.5-turbo",
@@ -88,6 +103,9 @@ def chat_with_openai(prompt):
 
 def search_recipes(query):
     """Cerca ricette usando OpenAI per interpretare la query"""
+    if client is None:
+        return []
+        
     try:
         # Usa OpenAI per interpretare la query
         response = chat_with_openai(query)
@@ -110,6 +128,9 @@ def search_recipes(query):
 
 def manage_tasks_with_chat(user_message):
     """Gestisce le task tramite chat con GPT"""
+    if client is None:
+        return "Mi dispiace, il servizio OpenAI non è configurato correttamente. Controlla le variabili d'ambiente."
+        
     system_prompt = """Sei un assistente che aiuta a gestire le task. Puoi eseguire le seguenti azioni:
     - AGGIUNGI: Aggiunge una nuova task
     - MODIFICA: Modifica una task esistente
