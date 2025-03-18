@@ -20,7 +20,12 @@ class VoiceAssistant:
         self.language = "it"
         
         # Configurazione OpenAI
-        self.openai_client = openai.OpenAI()
+        self.openai_client = None
+        try:
+            self.openai_client = openai.OpenAI()
+        except Exception as e:
+            self.logger.warning(f"OpenAI client initialization failed: {e}")
+            self.openai_client = None
         
         self.logger.info("Inizializzazione VoiceAssistant completata")
 
@@ -53,6 +58,9 @@ class VoiceAssistant:
 
     def process_command(self, text):
         """Processa il comando vocale usando OpenAI e esegue le azioni necessarie."""
+        if self.openai_client is None:
+            return "Mi dispiace, il servizio OpenAI non è configurato correttamente. Controlla le variabili d'ambiente."
+            
         try:
             # Crea il prompt per l'assistente
             system_prompt = """Sei un assistente del calendario che aiuta a gestire eventi e attività. 
