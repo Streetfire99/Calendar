@@ -5,6 +5,7 @@ import openai
 import tempfile
 from datetime import datetime, timedelta
 import logging
+import streamlit as st
 from backend import add_event, delete_task, chat_with_openai, load_events
 
 class VoiceAssistant:
@@ -38,12 +39,14 @@ class VoiceAssistant:
         self.logger.info("Inizializzazione VoiceAssistant completata")
 
     def listen(self):
-        """Simula l'ascolto dell'input vocale restituendo un input testuale."""
+        """Gestisce l'input testuale tramite Streamlit."""
         try:
-            # In un ambiente web, useremo un input testuale invece della registrazione vocale
-            text = input("Inserisci il tuo comando: ")
+            # Usa l'input di Streamlit
+            text = st.session_state.get("voice_command", "")
             if text:
                 self.logger.info(f"Testo ricevuto: {text}")
+                # Pulisci l'input dopo averlo processato
+                st.session_state.voice_command = ""
                 return text
             return None
         except Exception as e:
