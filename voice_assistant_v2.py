@@ -22,7 +22,15 @@ class VoiceAssistant:
         # Configurazione OpenAI
         self.openai_client = None
         try:
-            self.openai_client = openai.OpenAI()
+            api_key = os.getenv("OPENAI_API_KEY")
+            org_id = os.getenv("OPENAI_ORG_ID")
+            if api_key and org_id:
+                self.openai_client = openai.OpenAI(
+                    api_key=api_key,
+                    organization=org_id
+                )
+            else:
+                self.logger.warning("OpenAI credentials not found in environment variables")
         except Exception as e:
             self.logger.warning(f"OpenAI client initialization failed: {e}")
             self.openai_client = None
