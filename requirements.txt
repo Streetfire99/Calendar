@@ -1,0 +1,13 @@
+streamlit
+pandas
+python-dotenv
+openai
+sounddevice
+scipy
+numpy
+ibm-watson
+watchdog
+flask
+pygame
+python-dateutil
+pytz
