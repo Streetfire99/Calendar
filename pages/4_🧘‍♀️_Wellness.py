@@ -64,8 +64,15 @@ with st.form("wellness_form"):
 if not st.session_state.wellness_data.empty:
     st.header("Le Tue Statistiche")
     
-    # Converti la colonna data in datetime
-    st.session_state.wellness_data['data'] = pd.to_datetime(st.session_state.wellness_data['data'])
+    try:
+        # Converti la colonna data in datetime
+        st.session_state.wellness_data['data'] = pd.to_datetime(st.session_state.wellness_data['data'])
+    except Exception as e:
+        st.error(f"Errore nella conversione delle date: {str(e)}")
+        st.session_state.wellness_data = pd.DataFrame(columns=[
+            'data', 'umore', 'energia', 'stress', 'sonno_ore', 'attivita_fisica_minuti',
+            'meditazione_minuti', 'note'
+        ])
     
     # Filtra per periodo
     periodo = st.selectbox("Seleziona Periodo", ["Ultima Settimana", "Ultimo Mese", "Ultimi 3 Mesi", "Tutto"])

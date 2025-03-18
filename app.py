@@ -524,7 +524,7 @@ with col_calendar:
                     }
                     .calendar .event {
                         background-color: var(--event-color);
-                        color: white;
+                        color: #ffffff !important;  /* Forza il colore bianco */
                         padding: 2px 4px;
                         border-radius: 2px;
                         margin: 1px 0;
@@ -533,6 +533,8 @@ with col_calendar:
                         white-space: nowrap;
                         cursor: pointer;
                         box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+                        font-weight: 500;  /* Rendi il testo più spesso */
+                        text-shadow: 0 1px 2px rgba(0,0,0,0.2);  /* Aggiungi ombra al testo */
                     }
                     .calendar .event:hover {
                         opacity: 0.9;
@@ -621,7 +623,7 @@ with col_calendar:
                     }
                     .week-calendar .event {
                         background-color: var(--event-color);
-                        color: white;
+                        color: #ffffff !important;  /* Forza il colore bianco */
                         padding: 1px 3px;
                         border-radius: 2px;
                         margin: 1px 0;
@@ -631,6 +633,8 @@ with col_calendar:
                         white-space: nowrap;
                         cursor: pointer;
                         box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+                        font-weight: 500;  /* Rendi il testo più spesso */
+                        text-shadow: 0 1px 2px rgba(0,0,0,0.2);  /* Aggiungi ombra al testo */
                     }
                     .week-calendar .event:hover {
                         opacity: 0.9;
@@ -710,7 +714,7 @@ with col_calendar:
                     }
                     .day-calendar .event {
                         background-color: var(--event-color);
-                        color: white;
+                        color: #ffffff !important;  /* Forza il colore bianco */
                         padding: 4px 8px;
                         border-radius: 2px;
                         margin: 2px 0;
@@ -719,6 +723,8 @@ with col_calendar:
                         text-overflow: ellipsis;
                         white-space: nowrap;
                         cursor: pointer;
+                        font-weight: 500;  /* Rendi il testo più spesso */
+                        text-shadow: 0 1px 2px rgba(0,0,0,0.2);  /* Aggiungi ombra al testo */
                     }
                     .day-calendar .event:hover {
                         opacity: 0.9;
