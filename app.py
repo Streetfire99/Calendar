@@ -394,45 +394,54 @@ st.markdown(chat_html, unsafe_allow_html=True)
 mic_col1, mic_col2, mic_col3 = st.columns([2, 2, 2])
 
 with mic_col2:
-    # Informazioni sui permessi del microfono
-    st.markdown("""
-        <div style='margin-bottom: 10px; padding: 8px; border-radius: 4px; background-color: #e3f2fd; border-left: 4px solid #1a73e8;'>
-            ℹ️ Per utilizzare il microfono:
-            <ol style='margin: 5px 0; padding-left: 20px;'>
-                <li>Clicca su "Consenti" quando il browser chiede i permessi</li>
-                <li>Se non vedi la richiesta, clicca sull'icona 🔒 nella barra degli indirizzi</li>
-                <li>Seleziona "Consenti" per l'accesso al microfono</li>
-            </ol>
-        </div>
-    """, unsafe_allow_html=True)
-
-    # Pulsante del microfono
-    mic_button = st.button(
-        "🎤 Stop Registrazione" if st.session_state.is_recording else "🎤 Inizia Registrazione",
-        type="primary" if st.session_state.is_recording else "secondary"
-    )
+    # Verifica se PyAudio è disponibile
+    try:
+        import pyaudio
+        pyaudio_available = True
+    except ImportError:
+        pyaudio_available = False
+        st.warning("⚠️ La registrazione vocale non è disponibile in questo ambiente. PyAudio non è installato.")
     
-    if mic_button:
-        if not st.session_state.is_recording:
-            st.session_state.is_recording = True
-            add_chat_message("🎤 Iniziata la registrazione. Parla ora e premi Stop quando hai finito.", "info")
-            st.rerun()
-        else:
-            st.session_state.is_recording = False
-            try:
-                # Gestisci il comando vocale
-                response = st.session_state.voice_assistant.handle_voice_command()
-                if response:
-                    add_chat_message("✅ Comando elaborato con successo!", "success")
-                else:
-                    add_chat_message("⚠️ Nessun comando riconosciuto", "warning")
-            except Exception as e:
-                add_chat_message(f"❌ Errore: {str(e)}", "error")
-            st.rerun()
+    if pyaudio_available:
+        # Informazioni sui permessi del microfono
+        st.markdown("""
+            <div style='margin-bottom: 10px; padding: 8px; border-radius: 4px; background-color: #e3f2fd; border-left: 4px solid #1a73e8;'>
+                ℹ️ Per utilizzare il microfono:
+                <ol style='margin: 5px 0; padding-left: 20px;'>
+                    <li>Clicca su "Consenti" quando il browser chiede i permessi</li>
+                    <li>Se non vedi la richiesta, clicca sull'icona 🔒 nella barra degli indirizzi</li>
+                    <li>Seleziona "Consenti" per l'accesso al microfono</li>
+                </ol>
+            </div>
+        """, unsafe_allow_html=True)
 
-    # Mostra lo stato della registrazione
-    if st.session_state.is_recording:
-        st.markdown("🔴 **Registrazione in corso...**")
+        # Pulsante del microfono
+        mic_button = st.button(
+            "🎤 Stop Registrazione" if st.session_state.is_recording else "🎤 Inizia Registrazione",
+            type="primary" if st.session_state.is_recording else "secondary"
+        )
+        
+        if mic_button:
+            if not st.session_state.is_recording:
+                st.session_state.is_recording = True
+                add_chat_message("🎤 Iniziata la registrazione. Parla ora e premi Stop quando hai finito.", "info")
+                st.rerun()
+            else:
+                st.session_state.is_recording = False
+                try:
+                    # Gestisci il comando vocale
+                    response = st.session_state.voice_assistant.handle_voice_command()
+                    if response:
+                        add_chat_message("✅ Comando elaborato con successo!", "success")
+                    else:
+                        add_chat_message("⚠️ Nessun comando riconosciuto", "warning")
+                except Exception as e:
+                    add_chat_message(f"❌ Errore: {str(e)}", "error")
+                st.rerun()
+
+        # Mostra lo stato della registrazione
+        if st.session_state.is_recording:
+            st.markdown("🔴 **Registrazione in corso...**")
 
 # Controlli del calendario
 col_controls = st.columns([2, 6, 2])

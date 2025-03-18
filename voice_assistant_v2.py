@@ -27,32 +27,48 @@ class VoiceAssistant:
         # Configurazione OpenAI
         self.openai_client = openai.OpenAI()
         
+        # Verifica disponibilità PyAudio
+        try:
+            import pyaudio
+            self.pyaudio_available = True
+        except ImportError:
+            self.pyaudio_available = False
+            self.logger.warning("PyAudio non disponibile. La registrazione vocale non sarà disponibile.")
+        
         self.logger.info("Inizializzazione VoiceAssistant completata")
 
     def listen(self):
         """Ascolta l'input vocale e lo converte in testo."""
-        with sr.Microphone() as source:
-            self.logger.info("In ascolto...")
-            # Regola per il rumore ambientale
-            self.recognizer.adjust_for_ambient_noise(source, duration=1)
-            try:
-                audio = self.recognizer.listen(source, timeout=10, phrase_time_limit=None)
-                self.logger.info("Audio catturato, elaborazione in corso...")
-                text = self.recognizer.recognize_google(audio, language="it-IT")
-                self.logger.info(f"Testo riconosciuto: {text}")
-                return text
-            except sr.WaitTimeoutError:
-                self.logger.warning("Timeout: nessun audio rilevato")
-                return None
-            except sr.UnknownValueError:
-                self.logger.warning("Audio non riconosciuto")
-                return None
-            except sr.RequestError as e:
-                self.logger.error(f"Errore nel servizio di riconoscimento: {e}")
-                return None
-            except Exception as e:
-                self.logger.error(f"Errore durante l'ascolto: {e}")
-                return None
+        if not self.pyaudio_available:
+            self.logger.error("PyAudio non disponibile. La registrazione vocale non è supportata.")
+            return None
+            
+        try:
+            with sr.Microphone() as source:
+                self.logger.info("In ascolto...")
+                # Regola per il rumore ambientale
+                self.recognizer.adjust_for_ambient_noise(source, duration=1)
+                try:
+                    audio = self.recognizer.listen(source, timeout=10, phrase_time_limit=None)
+                    self.logger.info("Audio catturato, elaborazione in corso...")
+                    text = self.recognizer.recognize_google(audio, language="it-IT")
+                    self.logger.info(f"Testo riconosciuto: {text}")
+                    return text
+                except sr.WaitTimeoutError:
+                    self.logger.warning("Timeout: nessun audio rilevato")
+                    return None
+                except sr.UnknownValueError:
+                    self.logger.warning("Audio non riconosciuto")
+                    return None
+                except sr.RequestError as e:
+                    self.logger.error(f"Errore nel servizio di riconoscimento: {e}")
+                    return None
+                except Exception as e:
+                    self.logger.error(f"Errore durante l'ascolto: {e}")
+                    return None
+        except Exception as e:
+            self.logger.error(f"Errore nell'inizializzazione del microfono: {e}")
+            return None
 
     def speak(self, text):
         """Converte il testo in audio e lo riproduce."""
@@ -153,6 +169,9 @@ class VoiceAssistant:
 
     def handle_voice_command(self):
         """Gestisce l'intero processo di comando vocale."""
+        if not self.pyaudio_available:
+            return "Mi dispiace, la registrazione vocale non è disponibile in questo ambiente. PyAudio non è installato."
+            
         # Ascolta il comando
         text = self.listen()
         
